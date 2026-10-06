@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twilekblue Cards — Come on in</title>
+<meta name="description" content="Twilekblue Cards — Star Wars trading cards. Graded slabs, raw singles and sealed wax. Come on in.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260924" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260924" />
+<link rel="shortcut icon" href="/favicon.ico?v=20260924" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260924" />
+<meta name="apple-mobile-web-app-title" content="Twilek Blue" />
+<link rel="manifest" href="/site.webmanifest?v=20260924" />
+<!-- LCP: this image IS the page. Preload it. -->
+<link rel="preload" as="image" href="assets/scene.jpg" fetchpriority="high">
+
+<style>
+/* ==========================================================================
+   TWILEK BLUE CARDS — cinematic scene homepage
+   Same conventions as index.html: twi-* prefixes, ACSS vars with hard
+   fallbacks, Bricks breakpoints, .twi-js gate for front-end-only motion.
+
+   ── HOW THE HOTSPOTS STAY GLUED TO THE IMAGE ──────────────────────────────
+   The naive approach (background-size:cover + an absolutely positioned link)
+   BREAKS, because cover re-crops at every aspect ratio and the hotspot slides
+   off the door.
+
+   Instead .twi-stage is a ratio-locked box sized with:
+       width: max(100%, 100svh * <aspect ratio>)
+   which reproduces cover behaviour EXACTLY while staying a known rectangle.
+   Every hotspot is then positioned in % OF THE STAGE, so it tracks the
+   artwork pixel-for-pixel at any viewport size. --twi-focus picks which part
+   of the image stays centred when it overflows.
+
+   ── TUNING THE HOTSPOTS ───────────────────────────────────────────────────
+   Add #tune to the URL to see the hotspot boxes, click one to select it,
+   arrow keys nudge, Shift+arrows resize, press C to copy the CSS back out.
+   Every number lives in the :root block directly below.
+   ========================================================================== */
+:root{
+  /* --- artwork --- */
+  --twi-ar: 1406 / 768;      /* scene.jpg native aspect ratio */
+  --twi-ar-n: 1.8307;        /* the same number, for the cover math */
+  --twi-focus: 50%;          /* which x of the image stays centred */
+  --twi-vh: 100svh;          /* height the plate has to cover */
+
+  /* --- HOTSPOT: the doorway (dark recess under the porch overhang) --- */
+  --door-x: 62.4%;
+  --door-y: 66%;
+  --door-w: 6.6%;
+  --door-h: 16.5%;
+
+  /* --- HOTSPOT: the neon sign --- */
+  --neon-x: 78.2%;
+  --neon-y: 47.8%;
+  --neon-w: 8.6%;
+  --neon-h: 14%;
+
+  /* --- the ellipse the flicker is painted through. Centre it on the sign;
+         make the radii a little larger so the rock it lights up flickers too. */
+  --neon-cx: 82.5%;
+  --neon-cy: 54.8%;
+  --neon-rx: 13%;
+  --neon-ry: 20%;
+
+  /* --- brand (shared with index.html) --- */
+  --twi-void:var(--base-ultra-dark,#05091A);
+  --twi-rutian:var(--primary,#3FB8F2);
+  --twi-rutian-deep:var(--primary-dark,#1878C4);
+  --twi-cyan:var(--primary-light,#7FE3FF);
+  --twi-gold:var(--action,#F0B429);
+  --twi-gold-dark:var(--action-hover,#D19A16);
+  --twi-sand:var(--neutral-ultra-light,#E9E4D7);
+  --twi-sand-70:rgba(233,228,215,.72);
+  --twi-sand-14:rgba(233,228,215,.14);
+  --twi-font-display:"Syne","Trebuchet MS",sans-serif;
+  --twi-font-body:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body{margin:0;font-family:var(--twi-font-body);color:var(--twi-sand);background:#120C0A;-webkit-font-smoothing:antialiased;}
+img{max-width:100%;display:block;}
+
+/* ==========================================================================
+   SCENE + STAGE
+   ========================================================================== */
+.twi-scene{
+  position:relative;
+  height:100vh;height:100svh;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+/* the plate is the window the artwork has to fill; on desktop that's the
+   whole viewport, on mobile it's a band with the copy sitting underneath */
+.twi-plate{position:absolute;inset:0;overflow:hidden;}
+
+.twi-stage{
+  position:absolute;
+  top:50%;left:50%;
+  width:max(100%, calc(var(--twi-vh) * var(--twi-ar-n)));
+  aspect-ratio:var(--twi-ar);
+  transform:translate(calc(-1 * var(--twi-focus)), -50%);
+}
+
+/* parallax lives on an inner wrapper so it never fights the cover math */
+.twi-parallax{
+  position:absolute;inset:0;
+  transform:scale(1.035) translate3d(var(--twi-px,0px),var(--twi-py,0px),0);
+  transition:transform .6s cubic-bezier(.22,1,.36,1);
+  will-change:transform;
+}
+.twi-parallax img{width:100%;height:100%;object-fit:cover;}
+
+/* ==========================================================================
+   ATMOSPHERE — everything below sits ON the artwork
+   ========================================================================== */
+/* darkens the sky just enough for the nav to be legible */
+.twi-scrim{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(10,8,14,.55) 0%, rgba(10,8,14,0) 26%),
+    linear-gradient(0deg, rgba(10,8,14,.5) 0%, rgba(10,8,14,0) 30%);
+}
+
+/* ---------- NEON --------------------------------------------------------
+   The sign is baked into the JPEG, so there's nothing to switch on and off.
+
+   The trick: lay a SECOND copy of the same plate directly on top of the
+   first, push it through a brightness/saturate filter, and mask it to an
+   ellipse over the sign. Fading that layer in and out makes the sign — and
+   the rock it lights up — pulse and stutter like real neon.
+
+   It lives INSIDE .twi-parallax so it inherits the same transform as the
+   base image; inset:0 plus background-size:100% 100% means the two copies
+   are pixel-registered and can never drift apart, at any viewport size.
+   No extra assets, no GIF, and every number here is tweakable.
+   ------------------------------------------------------------------------ */
+.twi-neon{
+  position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:url("assets/scene.jpg") 0 0 / 100% 100% no-repeat;
+  filter:brightness(1.8) saturate(1.5) contrast(1.04);
+  -webkit-mask-image:radial-gradient(ellipse var(--neon-rx) var(--neon-ry) at var(--neon-cx) var(--neon-cy),
+    #000 30%, rgba(0,0,0,.55) 58%, transparent 100%);
+  mask-image:radial-gradient(ellipse var(--neon-rx) var(--neon-ry) at var(--neon-cx) var(--neon-cy),
+    #000 30%, rgba(0,0,0,.55) 58%, transparent 100%);
+  opacity:.5;
+  animation:twi-buzz 9s steps(1,end) infinite;
+}
+/* front end only: the sign stutters on like a tube warming up, then settles */
+.twi-js .twi-neon{
+  animation:twi-warmup 1.7s steps(1,end) 1, twi-buzz 9s steps(1,end) 1.7s infinite;
+}
+
+/* ---------- DOORWAY: warm lamplight, so the opening reads as "enterable" -- */
+.twi-doorglow{
+  position:absolute;z-index:3;pointer-events:none;
+  left:var(--door-x);top:var(--door-y);
+  width:var(--door-w);height:var(--door-h);
+}
+.twi-doorglow::before{
+  content:"";position:absolute;inset:-90% -130%;
+  mix-blend-mode:screen;
+  background:radial-gradient(closest-side ellipse at 50% 58%,
+    rgba(255,186,94,.62) 0%, rgba(240,140,50,.26) 40%, rgba(240,140,50,0) 74%);
+  animation:twi-lamp 5.5s ease-in-out infinite;
+  transition:opacity .45s ease,transform .45s ease;
+}
+
+/* dust motes drifting through the light */
+.twi-dust{
+  position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.5;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,222,180,.7) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 68% 58%, rgba(255,222,180,.55) 50%, transparent 51%),
+    radial-gradient(1.8px 1.8px at 44% 76%, rgba(255,222,180,.45) 50%, transparent 51%),
+    radial-gradient(1.1px 1.1px at 84% 22%, rgba(255,222,180,.5) 50%, transparent 51%);
+  background-size:340px 340px,470px 470px,520px 520px,400px 400px;
+  animation:twi-dustdrift 34s linear infinite;
+}
+
+/* ==========================================================================
+   HOTSPOTS — real <a> elements, real text, keyboard reachable
+   ========================================================================== */
+.twi-hot{
+  position:absolute;z-index:5;
+  display:block;
+  border-radius:8px;
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.twi-hot--door{left:var(--door-x);top:var(--door-y);width:var(--door-w);height:var(--door-h);border-radius:44% 44% 6% 6%;}
+.twi-hot--neon{left:var(--neon-x);top:var(--neon-y);width:var(--neon-w);height:var(--neon-h);}
+
+.twi-hot span{
+  position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;
+}
+.twi-hot:focus-visible{
+  outline:2px solid var(--twi-gold);
+  outline-offset:6px;
+}
+
+/* hover: the doorway brightens and a label surfaces */
+.twi-hot--door:hover ~ .twi-doorglow::before,
+.twi-hot--door:focus-visible ~ .twi-doorglow::before{
+  opacity:1;transform:scale(1.18);animation-play-state:paused;
+}
+/* the neon layer sits inside .twi-parallax, which precedes the hotspots in
+   the DOM, so ~ can't reach it — :has() on the stage can */
+.twi-stage:has(.twi-hot--neon:hover) .twi-neon,
+.twi-stage:has(.twi-hot--neon:focus-visible) .twi-neon{
+  animation:none;opacity:.95;
+}
+
+/* ==========================================================================
+   NAV — the logo, where a nav bar would live
+   ========================================================================== */
+.twi-topbar{
+  position:absolute;z-index:10;top:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:26px clamp(20px,4vw,52px);
+  box-sizing:border-box;
+}
+/* The logo is a transparent-background PNG (the cartoon mascot + wordmark). */
+.twi-brand{display:flex;align-items:center;text-decoration:none;color:var(--twi-sand);}
+.twi-brand img.twi-logo{
+  height:clamp(48px,6vw,80px);width:auto;display:block;
+  filter:drop-shadow(0 2px 10px rgba(8,6,12,.75));
+}
+
+.twi-navlink{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 17px;border-radius:999px;
+  border:1px solid var(--twi-sand-14);
+  background:rgba(12,10,16,.4);
+  backdrop-filter:blur(8px);
+  font-size:13px;font-weight:500;color:var(--twi-sand-70);text-decoration:none;
+  transition:color .25s ease,border-color .25s ease,background-color .25s ease;
+}
+.twi-navlink:hover{color:var(--twi-void);background:var(--twi-gold);border-color:var(--twi-gold);}
+
+/* ==========================================================================
+   ENTRY
+   Nothing but the artwork on every size — the doorway and the sign ARE the
+   navigation. The <h1> stays in the markup for screen readers only.
+   ========================================================================== */
+.twi-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
+/* ==========================================================================
+   MOTION
+   ========================================================================== */
+/* idle buzz — mostly steady, with the odd stutter a tired tube would have */
+@keyframes twi-buzz{
+  0%,100%{opacity:.5}
+  3%{opacity:.24}  5%{opacity:.64}  6%{opacity:.32} 8%{opacity:.54}
+  34%{opacity:.5}  35%{opacity:.8}  36%{opacity:.36} 37%{opacity:.6}
+  61%{opacity:.5}  62%{opacity:.28} 63%{opacity:.56}
+  84%{opacity:.52} 85%{opacity:.82} 86%{opacity:.42} 87%{opacity:.58}
+}
+/* one-shot on load — the tube fighting its way alight */
+@keyframes twi-warmup{
+  0%{opacity:0}
+  6%{opacity:.72}  9%{opacity:0}
+  14%{opacity:.5}  17%{opacity:0}
+  22%{opacity:.88} 25%{opacity:.08}
+  31%{opacity:.6}  34%{opacity:0}
+  41%{opacity:.92} 45%{opacity:.26}
+  56%{opacity:.7}  59%{opacity:.34}
+  71%{opacity:.76} 75%{opacity:.44}
+  88%{opacity:.6}
+  100%{opacity:.5}
+}
+@keyframes twi-lamp{0%,100%{opacity:.78;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+@keyframes twi-dustdrift{to{background-position:340px -180px,-470px 240px,520px -300px,-400px 160px;}}
+@keyframes twi-rise{to{opacity:1;transform:none;}}
+
+.twi-js .twi-reveal{opacity:0;transform:translateY(14px);animation:twi-rise .9s cubic-bezier(.22,1,.36,1) forwards;}
+.twi-js .twi-reveal--1{animation-delay:.15s;}
+.twi-js .twi-reveal--2{animation-delay:.3s;}
+.twi-js .twi-reveal--3{animation-delay:.45s;}
+
+@media (prefers-reduced-motion:reduce){
+  .twi-neon{animation:none!important;opacity:.56!important;}
+  .twi-doorglow::before,.twi-dust{animation:none!important;}
+  .twi-parallax{transform:scale(1.035)!important;transition:none!important;}
+  .twi-js .twi-reveal{opacity:1!important;transform:none!important;animation:none!important;}
+}
+
+/* ==========================================================================
+   BREAKPOINTS — Bricks defaults
+   ========================================================================== */
+@media (max-width:1199px){
+  .twi-topbar{padding:20px 24px;}
+}
+
+/* Tablet portrait: bias the crop toward the shack so it can't slide off. */
+@media (max-width:991px){
+  :root{--twi-focus:66%;}
+}
+
+/* ── MOBILE PORTRAIT ───────────────────────────────────────────────────────
+   Full-bleed on the phone too, same as landscape and desktop — no band, no
+   copy underneath. A 1.83:1 plate on a portrait screen has to crop hard, so
+   --twi-focus pans the frame onto the shack: it puts the doorway and the sign
+   either side of centre and drops the empty canyon off the left. The cover
+   maths is untouched, so the hotspots and glows stay glued to the artwork.
+   Upgrade path: a purpose-shot portrait crop swapped in via <picture>.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width:767px){
+  :root{--twi-focus:74.6%;}
+  .twi-parallax{transform:none;}
+  .twi-topbar{padding:18px 20px;}
+  .twi-navlink{padding:8px 13px;font-size:12px;}
+}
+
+@media (max-width:478px){
+  .twi-navlink span.twi-navlink__long{display:none;}
+}
+
+/* ==========================================================================
+   #tune — hotspot calibration overlay (dev only, inert without the hash)
+   ========================================================================== */
+.twi-tuning .twi-hot{background:rgba(63,184,242,.22);outline:2px dashed var(--twi-cyan);}
+.twi-tuning .twi-hot.is-sel{background:rgba(240,180,41,.3);outline:2px solid var(--twi-gold);}
+.twi-tuner{
+  position:fixed;z-index:100;left:14px;bottom:14px;
+  padding:12px 14px;border-radius:10px;
+  background:rgba(6,8,16,.92);border:1px solid var(--twi-sand-14);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.7;
+  color:var(--twi-sand);white-space:pre;
+}
+.twi-tuner b{color:var(--twi-gold);font-weight:600;}
+</style>
+</head>
+<body>
+
+<section class="twi-scene">
+
+  <!-- ====================================================================
+       THE PLATE
+       Swap in AVIF/WebP + a portrait crop when you have them:
+         <source media="(max-width:767px)" srcset="assets/scene-portrait.avif" type="image/avif">
+         <source srcset="assets/scene-2560.avif 2560w, assets/scene-1406.avif 1406w"
+                 sizes="100vw" type="image/avif">
+       ==================================================================== -->
+  <div class="twi-plate">
+  <div class="twi-stage">
+    <div class="twi-parallax">
+      <picture>
+        <img src="assets/scene.jpg"
+             width="1406" height="768"
+             fetchpriority="high" decoding="async"
+             alt="A weathered trading-card shop built into a red rock canyon on a desert world, twin suns setting behind the mesas, a blue neon Twilekblue Cards sign glowing above the doorway.">
+      </picture>
+      <!-- flicker layer: a second copy of the plate, brightened and masked to
+           the sign. Inside .twi-parallax so it moves with the base image. -->
+      <div class="twi-neon" aria-hidden="true"></div>
+    </div>
+
+    <div class="twi-scrim" aria-hidden="true"></div>
+    <div class="twi-dust" aria-hidden="true"></div>
+
+    <!-- hotspots first: the CSS sibling selectors below depend on this order -->
+    <a class="twi-hot twi-hot--door" href="https://twilekbluecards.tcgplayerpro.com">
+      <span>Enter the shop — browse every card in stock</span>
+    </a>
+    <a class="twi-hot twi-hot--neon" href="https://twilekbluecards.tcgplayerpro.com">
+      <span>Twilekblue Cards — enter the shop</span>
+    </a>
+
+    <div class="twi-doorglow" aria-hidden="true"></div>
+  </div>
+  </div><!-- /.twi-plate -->
+
+  <!-- ====================================================================
+       NAV — logo is inline SVG so its ink can follow CSS `color`
+       ==================================================================== -->
+  <header class="twi-topbar twi-reveal twi-reveal--1">
+    <a class="twi-brand" href="/">
+      <img class="twi-logo" src="assets/logo.png" alt="Twilekblue Cards">
+    </a>
+  </header>
+
+  <!-- screen readers only — the scene carries the page visually -->
+  <h1 class="twi-sr">Twilekblue Cards &mdash; Star Wars trading cards: graded slabs, raw singles and sealed wax.</h1>
+
+</section>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  root.classList.add('twi-js');
+
+  var scene = document.querySelector('.twi-scene');
+  var para  = document.querySelector('.twi-parallax');
+  var fine  = window.matchMedia('(hover:hover) and (pointer:fine)');
+  var calm  = window.matchMedia('(prefers-reduced-motion:reduce)');
+
+  /* ---- gentle parallax: the plate drifts a few px against the cursor ---- */
+  if (para && fine.matches && !calm.matches){
+    scene.addEventListener('mousemove', function(e){
+      var r = scene.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width  - .5;
+      var y = (e.clientY - r.top)  / r.height - .5;
+      para.style.setProperty('--twi-px', (-x * 16).toFixed(2) + 'px');
+      para.style.setProperty('--twi-py', (-y * 12).toFixed(2) + 'px');
+    });
+    scene.addEventListener('mouseleave', function(){
+      para.style.setProperty('--twi-px','0px');
+      para.style.setProperty('--twi-py','0px');
+    });
+  }
+
+  /* ====================================================================
+     #tune — hotspot calibration. Inert unless the URL ends in #tune.
+     Click a box to select · arrows nudge · Shift+arrows resize · C copies.
+     ==================================================================== */
+  var started = false;
+
+  function initTuner(){
+    /* adding #tune to an already-open page is a same-document navigation, so
+       this also runs off hashchange — no reload needed. */
+    if (started || location.hash !== '#tune') return;
+    started = true;
+
+    root.classList.add('twi-tuning');
+    var sel = null, STEP = 0.2;
+    var keys = {
+      'twi-hot--door': ['--door-x','--door-y','--door-w','--door-h'],
+      'twi-hot--neon': ['--neon-x','--neon-y','--neon-w','--neon-h']
+    };
+    var hud = document.createElement('div');
+    hud.className = 'twi-tuner';
+    document.body.appendChild(hud);
+
+    function num(k){ return parseFloat(getComputedStyle(root).getPropertyValue(k)); }
+    function css(){
+      var out = '';
+      for (var c in keys) keys[c].forEach(function(k){ out += '  ' + k + ': ' + num(k).toFixed(1) + '%;\n'; });
+      return out;
+    }
+    function draw(){
+      hud.innerHTML = (sel ? '<b>' + sel.className.split(' ')[1] + '</b> selected\n' : 'click a hotspot\n')
+        + 'arrows move · shift resize · C copy\n\n' + css();
+    }
+    document.querySelectorAll('.twi-hot').forEach(function(el){
+      el.addEventListener('click', function(e){
+        e.preventDefault();
+        document.querySelectorAll('.twi-hot').forEach(function(o){ o.classList.remove('is-sel'); });
+        el.classList.add('is-sel'); sel = el; draw();
+      });
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'c' || e.key === 'C'){
+        navigator.clipboard && navigator.clipboard.writeText(css());
+        hud.innerHTML = 'copied to clipboard\n\n' + css();
+        return;
+      }
+      if (!sel) return;
+      var k = keys[sel.className.split(' ')[1]];
+      if (!k) return;
+      var map = { ArrowLeft:[0,-1], ArrowRight:[0,1], ArrowUp:[1,-1], ArrowDown:[1,1] };
+      var m = map[e.key];
+      if (!m) return;
+      e.preventDefault();
+      var key = k[e.shiftKey ? m[0] + 2 : m[0]];
+      root.style.setProperty(key, (num(key) + m[1] * STEP).toFixed(1) + '%');
+      draw();
+    });
+    draw();
+  }
+
+  window.addEventListener('hashchange', initTuner);
+  initTuner();
+})();
+</script>
+
+</body>
+</html>
