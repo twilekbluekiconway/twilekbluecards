@@ -367,6 +367,19 @@ img{max-width:100%;display:block;}
   .twi-navlink span.twi-navlink__long{display:none;}
 }
 
+/* ── PHONE LANDSCAPE ─────────────────────────────────────────────────────
+   Short, wide viewport: the top-left logo collides with the merch ship.
+   Center the logo at the top of the stage so both stay clear. */
+@media (max-height:500px) and (orientation:landscape){
+  .twi-topbar{
+    justify-content:center;
+    padding-top:14px;
+  }
+  .twi-brand img.twi-logo{
+    height:clamp(36px,8vh,52px);
+  }
+}
+
 /* ==========================================================================
    #tune — hotspot calibration overlay (dev only, inert without the hash)
    ========================================================================== */
