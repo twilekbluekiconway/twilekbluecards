@@ -163,18 +163,35 @@ img{max-width:100%;display:block;}
 }
 
 /* ---------- MERCH SHIP: flying truck button, links to Redbubble ---------- */
+/* Outer wrapper carries the full artwork (ship + smoke + debris) and is NOT
+   clickable — pointer-events:none. The inner <span class="twi-ship__hit">
+   re-enables pointer events and wraps tight around the ship body only,
+   so the smoke trail can't block the door/sign hotspots. */
 .twi-ship{
   position:absolute;z-index:4;
   left:var(--ship-x);top:var(--ship-y);
   width:var(--ship-w);
   display:block;
-  -webkit-tap-highlight-color:transparent;
+  pointer-events:none;
   animation:twi-shipbob 7s ease-in-out infinite;
+}
+.twi-ship img{width:100%;height:auto;display:block;pointer-events:none;}
+
+/* Clickable zone: the ship body occupies roughly the left 45% × top 60%
+   of the bundle (the rest is smoke/debris). */
+.twi-ship__hit{
+  position:absolute;
+  left:0;top:0;
+  width:45%;height:62%;
+  pointer-events:auto;
+  display:block;
+  border-radius:12px;
   transition:transform .4s ease;
 }
-.twi-ship img{width:100%;height:auto;display:block;}
-.twi-ship:hover{transform:translateY(-6px) scale(1.02);}
+.twi-ship__hit:hover{transform:translateY(-6px) scale(1.04);}
+.twi-ship__hit:hover ~ img,
 .twi-ship:hover img{filter:brightness(1.15) saturate(1.1);}
+.twi-ship img{transition:filter .3s ease;}
 
 /* gentle hover-bob — ship floats, dips, rises */
 @keyframes twi-shipbob{
@@ -405,7 +422,8 @@ img{max-width:100%;display:block;}
          Sits in the sky above the twin suns; transparent PNG layered
          over the untouched scene. -->
     <a class="twi-ship" href="https://twilekbluecards.redbubble.com" target="_blank" rel="noopener">
-      <img src="assets/merch-ship.png" alt="Merch ship — visit the Twilekblue Cards merch store">
+      <span class="twi-ship__hit" aria-label="Merch ship — visit the Twilekblue Cards merch store"></span>
+      <img src="assets/merch-ship.png" alt="" aria-hidden="true">
     </a>
 
     <div class="twi-doorglow" aria-hidden="true"></div>
