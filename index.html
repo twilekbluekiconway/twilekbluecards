@@ -67,6 +67,13 @@
   --neon-rx: 13%;
   --neon-ry: 20%;
 
+  /* --- MERCH SHIP: the flying merch truck, layered over the sky --- */
+  /* Ship bundle is 773×449px on the 1406×768 plate → 55% × 58.5%.
+     Placed upper-left, just above the twin suns. */
+  --ship-x: 17.6%;
+  --ship-y: 21.5%;
+  --ship-w: 55%;
+
   /* --- brand (shared with index.html) --- */
   --twi-void:var(--base-ultra-dark,#05091A);
   --twi-rutian:var(--primary,#3FB8F2);
@@ -153,6 +160,28 @@ img{max-width:100%;display:block;}
 /* front end only: the sign stutters on like a tube warming up, then settles */
 .twi-js .twi-neon{
   animation:twi-warmup 1.7s steps(1,end) 1, twi-buzz 9s steps(1,end) 1.7s infinite;
+}
+
+/* ---------- MERCH SHIP: flying truck button, links to Redbubble ---------- */
+.twi-ship{
+  position:absolute;z-index:4;
+  left:var(--ship-x);top:var(--ship-y);
+  width:var(--ship-w);
+  display:block;
+  -webkit-tap-highlight-color:transparent;
+  animation:twi-shipbob 7s ease-in-out infinite;
+  transition:transform .4s ease;
+}
+.twi-ship img{width:100%;height:auto;display:block;}
+.twi-ship:hover{transform:translateY(-6px) scale(1.02);}
+.twi-ship:hover img{filter:brightness(1.15) saturate(1.1);}
+
+/* gentle hover-bob — ship floats, dips, rises */
+@keyframes twi-shipbob{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  25%{transform:translateY(-4px) rotate(-.3deg);}
+  50%{transform:translateY(-7px) rotate(0deg);}
+  75%{transform:translateY(-3px) rotate(.3deg);}
 }
 
 /* ---------- DOORWAY: warm lamplight, so the opening reads as "enterable" -- */
@@ -370,6 +399,13 @@ img{max-width:100%;display:block;}
     </a>
     <a class="twi-hot twi-hot--neon" href="https://twilekbluecards.tcgplayerpro.com">
       <span>Twilekblue Cards — enter the shop</span>
+    </a>
+
+    <!-- MERCH SHIP: animated button to the Redbubble merch store.
+         Sits in the sky above the twin suns; transparent PNG layered
+         over the untouched scene. -->
+    <a class="twi-ship" href="https://twilekbluecards.redbubble.com" target="_blank" rel="noopener">
+      <img src="assets/merch-ship.png" alt="Merch ship — visit the Twilekblue Cards merch store">
     </a>
 
     <div class="twi-doorglow" aria-hidden="true"></div>
