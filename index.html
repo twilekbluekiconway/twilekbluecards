@@ -74,6 +74,11 @@
   --ship-y: 21.5%;
   --ship-w: 55%;
 
+  /* --- MERCH CHARACTER: blue figure w/ MERCH sign on the cliff ridge --- */
+  --char-x: 84.5%;
+  --char-y: 9.9%;
+  --char-w: 4.69%;
+
   /* --- brand (shared with index.html) --- */
   --twi-void:var(--base-ultra-dark,#05091A);
   --twi-rutian:var(--primary,#3FB8F2);
@@ -161,6 +166,20 @@ img{max-width:100%;display:block;}
 .twi-js .twi-neon{
   animation:twi-warmup 1.7s steps(1,end) 1, twi-buzz 9s steps(1,end) 1.7s infinite;
 }
+
+/* ---------- MERCH CHARACTER: ridge figure button → Redbubble ---------- */
+.twi-char{
+  position:absolute;z-index:4;
+  left:var(--char-x);top:var(--char-y);
+  width:var(--char-w);
+  display:block;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .4s ease;
+}
+.twi-char img{width:100%;height:auto;display:block;}
+.twi-char:hover{transform:translateY(-4px) scale(1.06);}
+.twi-char:hover img{filter:brightness(1.2) saturate(1.15);}
+.twi-char img{transition:filter .3s ease;}
 
 /* ---------- MERCH SHIP: flying truck button, links to Redbubble ---------- */
 /* Outer wrapper carries the full artwork (ship + smoke + debris) and is NOT
@@ -378,6 +397,8 @@ img{max-width:100%;display:block;}
   .twi-brand img.twi-logo{
     height:clamp(36px,8vh,52px);
   }
+  /* Hide the ridge character in landscape — too crowded up top */
+  .twi-char{display:none;}
 }
 
 /* ==========================================================================
@@ -437,6 +458,12 @@ img{max-width:100%;display:block;}
     <a class="twi-ship" href="https://twilekbluecards.redbubble.com" target="_blank" rel="noopener">
       <span class="twi-ship__hit" aria-label="Merch ship — visit the Twilekblue Cards merch store"></span>
       <img src="assets/merch-ship.png" alt="" aria-hidden="true">
+    </a>
+
+    <!-- MERCH CHARACTER: blue figure holding MERCH sign on the cliff ridge.
+         Portrait only — hidden in landscape to avoid crowding the logo. -->
+    <a class="twi-char" href="https://twilekbluecards.redbubble.com" target="_blank" rel="noopener">
+      <img src="assets/merch-character.png" alt="Merch character — visit the Twilekblue Cards merch store">
     </a>
 
     <div class="twi-doorglow" aria-hidden="true"></div>
