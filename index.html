@@ -167,19 +167,26 @@ img{max-width:100%;display:block;}
   animation:twi-warmup 1.7s steps(1,end) 1, twi-buzz 9s steps(1,end) 1.7s infinite;
 }
 
-/* ---------- MERCH CHARACTER: ridge figure button → Redbubble ---------- */
+/* ---------- MERCH CHARACTER: ridge figure button → Redbubble ----------
+   Mobile portrait only — desktop has the ship button already. */
 .twi-char{
-  position:absolute;z-index:4;
-  left:var(--char-x);top:var(--char-y);
-  width:var(--char-w);
-  display:block;
-  -webkit-tap-highlight-color:transparent;
-  transition:transform .4s ease;
+  display:none;  /* hidden by default */
 }
-.twi-char img{width:100%;height:auto;display:block;}
-.twi-char:hover{transform:translateY(-4px) scale(1.06);}
-.twi-char:hover img{filter:brightness(1.2) saturate(1.15);}
-.twi-char img{transition:filter .3s ease;}
+
+@media (max-width:991px) and (orientation:portrait){
+  .twi-char{
+    position:absolute;z-index:4;
+    left:var(--char-x);top:var(--char-y);
+    width:var(--char-w);
+    display:block;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .4s ease;
+  }
+  .twi-char img{width:100%;height:auto;display:block;}
+  .twi-char:hover{transform:translateY(-4px) scale(1.06);}
+  .twi-char:hover img{filter:brightness(1.2) saturate(1.15);}
+  .twi-char img{transition:filter .3s ease;}
+}
 
 /* ---------- MERCH SHIP: flying truck button, links to Redbubble ---------- */
 /* Outer wrapper carries the full artwork (ship + smoke + debris) and is NOT
