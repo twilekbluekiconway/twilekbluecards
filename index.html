@@ -74,6 +74,9 @@
   --ship-y: 21.5%;
   --ship-w: 55%;
 
+  /* --- seasonal light overlays: set to `none` to hide without touching art --- */
+  --twi-holiday-lights-display:block;
+
   /* --- MERCH CHARACTER: blue figure w/ MERCH sign on the cliff ridge --- */
   --char-x: 80%;
   --char-y: 12.5%;
@@ -167,6 +170,14 @@ img{max-width:100%;display:block;}
   animation:twi-warmup 1.7s steps(1,end) 1, twi-buzz 9s steps(1,end) 1.7s infinite;
 }
 
+/* Seasonal Christmas lights are inline SVG overlays; all source images stay untouched.
+   Reversible switch: change --twi-holiday-lights-display to `none`. */
+.twi-holiday-lights{display:var(--twi-holiday-lights-display,block);pointer-events:none;}
+.twi-holiday-awning{
+  position:absolute;inset:0;z-index:4;width:100%;height:100%;
+  overflow:visible;pointer-events:none;
+}
+
 /* ---------- MERCH CHARACTER: ridge figure button → Redbubble ----------
    Mobile portrait only — desktop has the ship button already. */
 .twi-char{
@@ -174,6 +185,8 @@ img{max-width:100%;display:block;}
 }
 
 @media (max-width:991px) and (orientation:portrait){
+  /* Portrait framing pans away from the ship; hide its lights too so no detached trail shows at the crop edge. */
+  .twi-holiday-ship{display:none;}
   .twi-char{
     position:absolute;z-index:4;
     left:var(--char-x);top:var(--char-y);
@@ -183,6 +196,7 @@ img{max-width:100%;display:block;}
     transition:transform .4s ease;
   }
   .twi-char img{width:100%;height:auto;display:block;}
+  .twi-char img.twi-char-hat{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:fill;pointer-events:none;}
   .twi-char:hover{transform:translateY(-4px) scale(1.06);}
   .twi-char:hover img{filter:brightness(1.2) saturate(1.15);}
   .twi-char img{transition:filter .3s ease;}
@@ -202,6 +216,10 @@ img{max-width:100%;display:block;}
   animation:twi-shipbob 7s ease-in-out infinite;
 }
 .twi-ship img{width:100%;height:auto;display:block;pointer-events:none;}
+.twi-holiday-ship{
+  position:absolute;inset:0;z-index:1;width:100%;height:100%;
+  overflow:visible;pointer-events:none;
+}
 
 /* Clickable zone: the ship body occupies roughly the left 45% × top 60%
    of the bundle (the rest is smoke/debris). */
@@ -474,6 +492,21 @@ img{max-width:100%;display:block;}
       <!-- flicker layer: a second copy of the plate, brightened and masked to
            the sign. Inside .twi-parallax so it moves with the base image. -->
       <div class="twi-neon" aria-hidden="true"></div>
+      <!-- Seasonal storefront strand, separate from the untouched scene image. -->
+      <svg class="twi-holiday-lights twi-holiday-awning" viewBox="0 0 1406 768"
+           preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <filter id="twi-awning-bulb-glow" x="-200%" y="-200%" width="500%" height="500%">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <path id="twi-awning-cord" d="M957 522 C980 519 994 528 1016 528 C1036 528 1046 519 1068 519 C1090 519 1101 526 1120 525 C1134 524 1144 520 1153 519 C1156 519 1159 523 1160 528 C1160 534 1161 539 1164 542"
+              fill="none" stroke="#174b36" stroke-width="1.7" stroke-linecap="round"/>
+        <path class="twi-holiday-twist" d="M957 522 C980 519 994 528 1016 528 C1036 528 1046 519 1068 519 C1090 519 1101 526 1120 525 C1134 524 1144 520 1153 519 C1156 519 1159 523 1160 528 C1160 534 1161 539 1164 542"
+              fill="none" stroke="#6a9a60" stroke-width=".65" stroke-linecap="round" stroke-dasharray="1.5 2.4"/>
+        <g id="twi-awning-bulbs" filter="url(#twi-awning-bulb-glow)"></g>
+      </svg>
     </div>
 
     <div class="twi-scrim" aria-hidden="true"></div>
@@ -492,13 +525,34 @@ img{max-width:100%;display:block;}
          over the untouched scene. -->
     <a class="twi-ship" href="https://twilekbluecards.redbubble.com" target="_blank" rel="noopener">
       <span class="twi-ship__hit" aria-label="Merch ship — visit the Twilekblue Cards merch store"></span>
-      <img src="assets/merch-ship.png" alt="" aria-hidden="true">
+      <img src="assets/merch-ship-halo-softened.png" alt="" aria-hidden="true">
+      <!-- Loose noodle-like holiday lights; inline overlay follows the ship bob. -->
+      <svg class="twi-holiday-lights twi-holiday-ship" viewBox="0 0 773 449"
+           preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <filter id="twi-ship-cord-glow" x="-20%" y="-30%" width="140%" height="160%">
+            <feGaussianBlur stdDeviation="1.8"/>
+          </filter>
+          <filter id="twi-ship-bulb-glow" x="-200%" y="-200%" width="500%" height="500%">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <path d="M25 71 C44 66 54 64 71 61 C93 55 108 51 133 46 C139 45 142 50 145 52.7 C149 55.5 154 66 158 72 C170 89 176 103 189 115 C202 128 205 145 219 156 C229 165 233 170 243 175 C256 173 262 165 274 173 C286 181 286 190 300 194 C314 198 319 189 333 196 C347 203 344 215 359 217 C374 219 381 205 395 211 C410 218 406 232 422 235 C438 238 448 223 462 229 C477 235 472 249 488 252 C505 255 513 237 528 243 C544 249 540 263 557 267 C575 271 584 251 599 256 C614 261 615 275 632 273 C641 272 645 267 648 261"
+              fill="none" stroke="#63b67b" stroke-width="3.6" opacity=".24" filter="url(#twi-ship-cord-glow)"/>
+        <path id="twi-ship-cord" d="M25 71 C44 66 54 64 71 61 C93 55 108 51 133 46 C139 45 142 50 145 52.7 C149 55.5 154 66 158 72 C170 89 176 103 189 115 C202 128 205 145 219 156 C229 165 233 170 243 175 C256 173 262 165 274 173 C286 181 286 190 300 194 C314 198 319 189 333 196 C347 203 344 215 359 217 C374 219 381 205 395 211 C410 218 406 232 422 235 C438 238 448 223 462 229 C477 235 472 249 488 252 C505 255 513 237 528 243 C544 249 540 263 557 267 C575 271 584 251 599 256 C614 261 615 275 632 273 C641 272 645 267 648 261"
+              fill="none" stroke="#174b36" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="twi-holiday-twist" d="M25 71 C44 66 54 64 71 61 C93 55 108 51 133 46 C139 45 142 50 145 52.7 C149 55.5 154 66 158 72 C170 89 176 103 189 115 C202 128 205 145 219 156 C229 165 233 170 243 175 C256 173 262 165 274 173 C286 181 286 190 300 194 C314 198 319 189 333 196 C347 203 344 215 359 217 C374 219 381 205 395 211 C410 218 406 232 422 235 C438 238 448 223 462 229 C477 235 472 249 488 252 C505 255 513 237 528 243 C544 249 540 263 557 267 C575 271 584 251 599 256 C614 261 615 275 632 273 C641 272 645 267 648 261"
+              fill="none" stroke="#6a9a60" stroke-width=".7" stroke-linecap="round" stroke-dasharray="1.5 2.5"/>
+        <g id="twi-ship-bulbs" filter="url(#twi-ship-bulb-glow)"></g>
+      </svg>
     </a>
 
     <!-- MERCH CHARACTER: blue figure holding MERCH sign on the cliff ridge.
          Portrait only — hidden in landscape to avoid crowding the logo. -->
     <a class="twi-char" href="https://twilekbluecards.redbubble.com" target="_blank" rel="noopener">
       <img src="assets/merch-character.png" alt="Merch character — visit the Twilekblue Cards merch store">
+      <img class="twi-char-hat" src="assets/merch-character-santa-hat.png" alt="" aria-hidden="true">
     </a>
 
     <div class="twi-doorglow" aria-hidden="true"></div>
@@ -523,6 +577,55 @@ img{max-width:100%;display:block;}
 (function(){
   var root = document.documentElement;
   root.classList.add('twi-js');
+
+  /* Draw green-wire C6 bulbs along SVG cords; preserve the approved bulb positions. */
+  function placeHolidayBulbs(pathId, groupId, count, colorOffset, fixedPoints){
+    var path = document.getElementById(pathId);
+    var group = document.getElementById(groupId);
+    if (!path || !group) return;
+    var colors = ['#ff3745','#ffd13d','#36b7ff','#d846ef','#ff684b','#67d86d'];
+    var points = fixedPoints;
+    if (!points){
+      if (typeof path.getTotalLength !== 'function') return;
+      var length = path.getTotalLength();
+      points = [];
+      for (var n = 0; n < count; n++){
+        var p = path.getPointAtLength((n + .5) * length / count);
+        points.push([p.x,p.y]);
+      }
+    }
+    var ns = 'http://www.w3.org/2000/svg';
+    points.forEach(function(point,i){
+      var x = point[0], y = point[1];
+      var color = colors[(i + colorOffset) % colors.length];
+      var socket = document.createElementNS(ns,'rect');
+      socket.setAttribute('x',x - 1.3); socket.setAttribute('y',y - .5);
+      socket.setAttribute('width','2.6'); socket.setAttribute('height','2.2');
+      socket.setAttribute('rx','.5'); socket.setAttribute('fill','#1a5938');
+      socket.setAttribute('stroke','#9db57d'); socket.setAttribute('stroke-width','.4');
+      var bulb = document.createElementNS(ns,'path');
+      bulb.setAttribute('d','M'+(x-1.5)+' '+(y+1.3)+' L'+(x+1.5)+' '+(y+1.3)+' L'+(x+2.7)+' '+(y+3.5)+' L'+(x+1.8)+' '+(y+7.3)+' L'+x+' '+(y+9)+' L'+(x-1.8)+' '+(y+7.3)+' L'+(x-2.7)+' '+(y+3.5)+' Z');
+      bulb.setAttribute('fill',color); bulb.setAttribute('stroke','#f4edda'); bulb.setAttribute('stroke-width','.6');
+      var facet = document.createElementNS(ns,'path');
+      facet.setAttribute('d','M'+(x+.1)+' '+(y+1.7)+' L'+(x+2.25)+' '+(y+3.5)+' L'+(x+1.2)+' '+(y+7)+' L'+(x+.1)+' '+(y+8.25)+' Z');
+      facet.setAttribute('fill','#ffffff'); facet.setAttribute('fill-opacity','.32');
+      var shade = document.createElementNS(ns,'path');
+      shade.setAttribute('d','M'+(x-1.3)+' '+(y+1.7)+' L'+(x-2.25)+' '+(y+3.5)+' L'+(x-1.2)+' '+(y+7)+' L'+(x-.1)+' '+(y+8.25)+' Z');
+      shade.setAttribute('fill','#07151a'); shade.setAttribute('fill-opacity','.22');
+      group.appendChild(socket); group.appendChild(bulb); group.appendChild(facet); group.appendChild(shade);
+    });
+  }
+  var shipBulbPoints = [
+    [37.98,67.48],[65.12,61.85],[92.00,55.13],[118.97,48.70],
+    [145.04,52.68],[161.14,77.18],[177.14,101.78],[196.04,124.08],
+    [211.54,148.88],[232.94,168.88],[259.74,169.78],[284.14,182.98],
+    [309.54,194.78],[337.34,198.98],[359.14,216.98],[387.04,209.38],
+    [408.94,226.48],[435.04,233.68],[462.94,229.48],[482.64,250.38],
+    [510.14,245.18],[536.74,248.88],[558.24,267.18],[585.14,257.28],
+    [611.34,264.28],[637.74,271.28]
+  ];
+  placeHolidayBulbs('twi-ship-cord','twi-ship-bulbs',26,0,shipBulbPoints);
+  placeHolidayBulbs('twi-awning-cord','twi-awning-bulbs',12,0);
 
   var scene = document.querySelector('.twi-scene');
   var para  = document.querySelector('.twi-parallax');
